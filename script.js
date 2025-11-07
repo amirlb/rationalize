@@ -89,11 +89,18 @@ function rationalize(x) {
     const decimal = conv.p / conv.q;
     const error = Math.abs(decimal - x);
     const errorPercent = (error / Math.abs(x)) * 100;
+    const fractionString = `${conv.p}/${conv.q}`;
 
     rowsHTML += `
       <tr>
         <td class="decimal-cell">${formatDecimal(decimal)}</td>
-        <td class="fraction-cell">${conv.p} / ${conv.q}</td>
+        <td class="fraction-cell" onclick="copyFraction('${fractionString}')">
+          <div class="fraction-display">
+            <span class="fraction-numerator">${conv.p}</span>
+            <div class="fraction-line"></div>
+            <span class="fraction-denominator">${conv.q}</span>
+          </div>
+        </td>
         <td class="error-cell">${errorPercent.toFixed(4)}%</td>
       </tr>
     `;
@@ -103,6 +110,15 @@ function rationalize(x) {
 
   // Show results
   document.getElementById('results').classList.add('visible');
+}
+
+// Copy fraction to clipboard
+function copyFraction(fractionString) {
+  navigator.clipboard.writeText(fractionString).then(() => {
+    // Optional: Could add visual feedback here
+  }).catch(err => {
+    console.error('Failed to copy:', err);
+  });
 }
 
 // Event listener
