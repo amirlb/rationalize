@@ -59,7 +59,7 @@ function formatCF(terms) {
 function quality(p, q, x) {
   const error = Math.abs(p / q - x);
   // Add small epsilon to penalize large denominators even with zero error
-  return (error + 1e-5) * q;
+  return (error + 1e-6) * q * q;
 }
 
 // Format decimal to up to 15 significant digits without trailing zeros
@@ -87,26 +87,16 @@ function rationalize(x) {
     .sort((a, b) => a.score - b.score)
     .slice(0, 5); // Limit to 5 approximations
 
-  // Display convergents in table
-  const convergentsDiv = document.getElementById('convergents');
-  let tableHTML = `
-    <table>
-      <thead>
-        <tr>
-          <th>Decimal</th>
-          <th>Fraction</th>
-          <th>Error %</th>
-        </tr>
-      </thead>
-      <tbody>
-  `;
+  // Display convergents in table body
+  const tbody = document.getElementById('convergents');
+  let rowsHTML = '';
 
   sorted.forEach((conv) => {
     const decimal = conv.p / conv.q;
     const error = Math.abs(decimal - x);
     const errorPercent = (error / Math.abs(x)) * 100;
 
-    tableHTML += `
+    rowsHTML += `
       <tr>
         <td class="decimal-cell">${formatDecimal(decimal)}</td>
         <td class="fraction-cell">${conv.p} / ${conv.q}</td>
@@ -115,12 +105,7 @@ function rationalize(x) {
     `;
   });
 
-  tableHTML += `
-      </tbody>
-    </table>
-  `;
-
-  convergentsDiv.innerHTML = tableHTML;
+  tbody.innerHTML = rowsHTML;
 
   // Show results
   document.getElementById('results').classList.add('visible');
@@ -131,19 +116,5 @@ document.getElementById('numberInput').addEventListener('input', (e) => {
   const value = parseFloat(e.target.value);
   if (!isNaN(value)) {
     rationalize(value);
-  }
-});
-
-// Help icon toggle
-document.getElementById('helpIcon').addEventListener('click', () => {
-  document.getElementById('helpPopup').classList.toggle('visible');
-});
-
-// Close popup when clicking outside
-document.addEventListener('click', (e) => {
-  const popup = document.getElementById('helpPopup');
-  const icon = document.getElementById('helpIcon');
-  if (!popup.contains(e.target) && !icon.contains(e.target)) {
-    popup.classList.remove('visible');
   }
 });

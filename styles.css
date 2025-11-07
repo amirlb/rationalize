@@ -123,6 +123,7 @@ tr:last-child td {
   height: 2.5rem;
   background: #4a90e2;
   color: white;
+  border: none;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -139,7 +140,6 @@ tr:last-child td {
 }
 
 .help-popup {
-  display: none;
   position: fixed;
   bottom: 5rem;
   right: 1.5rem;
@@ -151,10 +151,7 @@ tr:last-child td {
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   font-size: 0.9rem;
   line-height: 1.5;
-}
-
-.help-popup.visible {
-  display: block;
+  margin: 0;
 }
 
 .help-popup a {
