@@ -134,3 +134,19 @@ document.getElementById('numberInput').addEventListener('input', (e) => {
     document.getElementById('results').classList.remove('visible');
   }
 });
+
+// Try to read from clipboard on page load
+window.addEventListener('load', async () => {
+  try {
+    const clipboardText = await navigator.clipboard.readText();
+    const value = parseFloat(clipboardText.trim());
+
+    if (!isNaN(value) && clipboardText.trim() !== '') {
+      const input = document.getElementById('numberInput');
+      input.value = clipboardText.trim();
+      rationalize(value);
+    }
+  } catch (err) {
+    // Clipboard access denied or not available - silently ignore
+  }
+});
