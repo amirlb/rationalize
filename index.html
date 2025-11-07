@@ -21,7 +21,16 @@
 
   <div id="results" class="results">
     <div class="section">
-      <div id="convergents"></div>
+      <table>
+        <thead>
+          <tr>
+            <th>Decimal</th>
+            <th>Fraction</th>
+            <th>Error %</th>
+          </tr>
+        </thead>
+        <tbody id="convergents"></tbody>
+      </table>
     </div>
 
     <div class="section">
@@ -30,8 +39,8 @@
     </div>
   </div>
 
-  <div class="help-icon" id="helpIcon">?</div>
-  <div class="help-popup" id="helpPopup">
+  <button class="help-icon" popovertarget="helpPopup">?</button>
+  <div class="help-popup" id="helpPopup" popover>
     <p><strong>(rationalize)</strong> finds rational approximations using the continued fraction algorithm.</p>
     <p style="margin-top: 0.75rem;">Convergents are ranked by quality: balancing accuracy with simplicity. The continued fraction shows the mathematical representation.</p>
     <p style="margin-top: 0.75rem;"><a href="https://en.wikipedia.org/wiki/Continued_fraction" target="_blank">Learn more on Wikipedia →</a></p>
