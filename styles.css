@@ -169,9 +169,9 @@ tr:last-child td {
 .help-popup {
   position: fixed;
   bottom: 5rem;
-  right: 1.5rem;
-  width: min(300px, calc(100vw - 3rem));
-  max-width: 300px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(300px, calc(100vw - 2rem));
   background: white;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -180,14 +180,6 @@ tr:last-child td {
   font-size: 0.9rem;
   line-height: 1.5;
   margin: 0;
-}
-
-@media (max-width: 400px) {
-  .help-popup {
-    left: 50%;
-    right: auto;
-    transform: translateX(-50%);
-  }
 }
 
 .help-popup a {
