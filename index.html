@@ -22,13 +22,7 @@
 
     h1 {
       font-size: 2rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .subtitle {
-      color: #666;
       margin-bottom: 2rem;
-      font-size: 0.95rem;
     }
 
     .input-section {
@@ -116,7 +110,6 @@
 </head>
 <body>
   <h1>Rationalize</h1>
-  <p class="subtitle">Find rational approximations using continued fractions</p>
 
   <div class="input-section">
     <input
@@ -141,7 +134,7 @@
       <h2>Convergents (Rational Approximations)</h2>
       <div id="convergents"></div>
       <div class="explanation">
-        Each convergent is computed from the continued fraction terms and provides progressively better approximations. Earlier convergents are simpler fractions.
+        Each convergent is computed from the continued fraction terms. Ranked by quality: balancing accuracy with simplicity of the denominator.
       </div>
     </div>
   </div>
@@ -203,6 +196,14 @@
       return `[${terms[0]}; ${terms.slice(1).join(', ')}]`;
     }
 
+    // Quality metric: balances accuracy with simplicity
+    // Lower score is better. Penalizes both error and large denominators.
+    function quality(p, q, x) {
+      const error = Math.abs(p / q - x);
+      // Add small epsilon to penalize large denominators even with zero error
+      return (error + 1e-5) * q;
+    }
+
     // Main computation and display
     function rationalize(x) {
       const terms = continuedFraction(x);
@@ -211,11 +212,19 @@
       // Display continued fraction
       document.getElementById('cfSequence').textContent = formatCF(terms);
 
+      // Sort convergents by quality (lower is better)
+      const sorted = convergents
+        .map(conv => ({
+          ...conv,
+          score: quality(conv.p, conv.q, x)
+        }))
+        .sort((a, b) => a.score - b.score);
+
       // Display convergents
       const convergentsDiv = document.getElementById('convergents');
       convergentsDiv.innerHTML = '';
 
-      convergents.forEach((conv, i) => {
+      sorted.forEach((conv, i) => {
         const decimal = conv.p / conv.q;
         const error = Math.abs(decimal - x);
 
