@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rationalize - Continued Fractions</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 2rem;
+      font-size: 0.95rem;
+    }
+
+    .input-section {
+      margin-bottom: 2rem;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1.1rem;
+      border: 2px solid #ddd;
+      border-radius: 4px;
+      transition: border-color 0.2s;
+    }
+
+    input[type="number"]:focus {
+      outline: none;
+      border-color: #4a90e2;
+    }
+
+    .results {
+      display: none;
+    }
+
+    .results.visible {
+      display: block;
+    }
+
+    .section {
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      background: #f8f9fa;
+      border-radius: 6px;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      color: #2c3e50;
+    }
+
+    .cf-sequence {
+      font-family: 'Courier New', monospace;
+      font-size: 1.1rem;
+      padding: 0.5rem;
+      background: white;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+
+    .convergent {
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+      background: white;
+      border-left: 3px solid #4a90e2;
+      border-radius: 4px;
+    }
+
+    .fraction {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .decimal {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .error {
+      color: #e74c3c;
+      font-size: 0.85rem;
+      margin-top: 0.25rem;
+    }
+
+    .explanation {
+      font-size: 0.9rem;
+      color: #555;
+      margin-top: 1rem;
+      padding: 1rem;
+      background: white;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Rationalize</h1>
+  <p class="subtitle">Find rational approximations using continued fractions</p>
+
+  <div class="input-section">
+    <input
+      type="number"
+      id="numberInput"
+      placeholder="Enter a decimal number (e.g., 3.14159)"
+      step="any"
+      autofocus
+    >
+  </div>
+
+  <div id="results" class="results">
+    <div class="section">
+      <h2>Continued Fraction</h2>
+      <div id="cfSequence" class="cf-sequence"></div>
+      <div class="explanation">
+        The continued fraction representation [a₀; a₁, a₂, ...] where each aᵢ is obtained by taking the integer part and reciprocating the remainder.
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Convergents (Rational Approximations)</h2>
+      <div id="convergents"></div>
+      <div class="explanation">
+        Each convergent is computed from the continued fraction terms and provides progressively better approximations. Earlier convergents are simpler fractions.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Compute continued fraction representation
+    // Returns array of integer coefficients [a₀, a₁, a₂, ...]
+    function continuedFraction(x, maxTerms = 15) {
+      const terms = [];
+      let remaining = x;
+
+      for (let i = 0; i < maxTerms; i++) {
+        const integer = Math.floor(remaining);
+        terms.push(integer);
+
+        const fractional = remaining - integer;
+        if (Math.abs(fractional) < 1e-10) break;
+
+        remaining = 1 / fractional;
+      }
+
+      return terms;
+    }
+
+    // Compute convergents (p/q) from continued fraction terms
+    // Each convergent is computed using recurrence relations:
+    //   p₋₁ = 1, p₀ = a₀
+    //   pₙ = aₙ * pₙ₋₁ + pₙ₋₂
+    // (similarly for q)
+    function computeConvergents(terms) {
+      const convergents = [];
+      let p_prev2 = 1, p_prev1 = terms[0];
+      let q_prev2 = 0, q_prev1 = 1;
+
+      // First convergent
+      convergents.push({ p: p_prev1, q: q_prev1 });
+
+      // Remaining convergents
+      for (let i = 1; i < terms.length; i++) {
+        const a = terms[i];
+        const p = a * p_prev1 + p_prev2;
+        const q = a * q_prev1 + q_prev2;
+
+        convergents.push({ p, q });
+
+        p_prev2 = p_prev1;
+        p_prev1 = p;
+        q_prev2 = q_prev1;
+        q_prev1 = q;
+      }
+
+      return convergents;
+    }
+
+    // Format continued fraction as [a₀; a₁, a₂, ...]
+    function formatCF(terms) {
+      if (terms.length === 0) return '[]';
+      if (terms.length === 1) return `[${terms[0]}]`;
+      return `[${terms[0]}; ${terms.slice(1).join(', ')}]`;
+    }
+
+    // Main computation and display
+    function rationalize(x) {
+      const terms = continuedFraction(x);
+      const convergents = computeConvergents(terms);
+
+      // Display continued fraction
+      document.getElementById('cfSequence').textContent = formatCF(terms);
+
+      // Display convergents
+      const convergentsDiv = document.getElementById('convergents');
+      convergentsDiv.innerHTML = '';
+
+      convergents.forEach((conv, i) => {
+        const decimal = conv.p / conv.q;
+        const error = Math.abs(decimal - x);
+
+        const div = document.createElement('div');
+        div.className = 'convergent';
+        div.innerHTML = `
+          <div class="fraction">${conv.p} / ${conv.q}</div>
+          <div class="decimal">≈ ${decimal.toFixed(10)}</div>
+          <div class="error">error: ${error.toExponential(3)}</div>
+        `;
+        convergentsDiv.appendChild(div);
+      });
+
+      // Show results
+      document.getElementById('results').classList.add('visible');
+    }
+
+    // Event listener
+    document.getElementById('numberInput').addEventListener('input', (e) => {
+      const value = parseFloat(e.target.value);
+      if (!isNaN(value)) {
+        rationalize(value);
+      }
+    });
+
+    // Example: Try π
+    // Uncomment to pre-populate:
+    // document.getElementById('numberInput').value = Math.PI;
+    // rationalize(Math.PI);
+  </script>
+</body>
+</html>
