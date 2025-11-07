@@ -22,7 +22,7 @@ h1 {
   margin-bottom: 2rem;
 }
 
-input[type="number"] {
+#numberInput {
   width: 100%;
   padding: 0.75rem;
   font-size: 1.1rem;
@@ -31,30 +31,12 @@ input[type="number"] {
   transition: border-color 0.2s;
 }
 
-/* Hide number input spinner arrows */
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-input[type="number"] {
-  -moz-appearance: textfield;
-}
-
-input[type="number"]:focus {
+#numberInput:focus {
   outline: none;
   border-color: #4a90e2;
 }
 
-input[type="number"].error {
-  background: repeating-linear-gradient(
-    45deg,
-    #ffebee,
-    #ffebee 10px,
-    #ffcdd2 10px,
-    #ffcdd2 20px
-  );
+#numberInput.error {
   border-color: #ef5350;
 }
 
