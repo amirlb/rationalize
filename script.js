@@ -1,15 +1,15 @@
 // Compute continued fraction representation
 // Returns array of integer coefficients [a₀, a₁, a₂, ...]
-function continuedFraction(x, maxTerms = 15) {
+function continuedFraction(x) {
   const terms = [];
   let remaining = x;
 
-  for (let i = 0; i < maxTerms; i++) {
+  while (true) {
     const integer = Math.floor(remaining);
     terms.push(integer);
 
     const fractional = remaining - integer;
-    if (Math.abs(fractional) < 1e-10) break;
+    if (fractional === 0) break;
 
     remaining = 1 / fractional;
   }
@@ -17,34 +17,24 @@ function continuedFraction(x, maxTerms = 15) {
   return terms;
 }
 
-// Compute convergents (p/q) from continued fraction terms
-// Each convergent is computed using recurrence relations:
-//   p₋₁ = 1, p₀ = a₀
-//   pₙ = aₙ * pₙ₋₁ + pₙ₋₂
-// (similarly for q)
-function computeConvergents(terms) {
-  const convergents = [];
-  let p_prev2 = 1, p_prev1 = terms[0];
-  let q_prev2 = 0, q_prev1 = 1;
+// Generator that yields convergents from continued fraction terms
+// Uses recurrence: pₙ = aₙ * pₙ₋₁ + pₙ₋₂ (similarly for q)
+function* generateConvergents(terms) {
+  let [p_prev, p] = [1, terms[0]];
+  let [q_prev, q] = [0, 1];
 
-  // First convergent
-  convergents.push({ p: p_prev1, q: q_prev1 });
+  yield { p, q };
 
-  // Remaining convergents
   for (let i = 1; i < terms.length; i++) {
-    const a = terms[i];
-    const p = a * p_prev1 + p_prev2;
-    const q = a * q_prev1 + q_prev2;
-
-    convergents.push({ p, q });
-
-    p_prev2 = p_prev1;
-    p_prev1 = p;
-    q_prev2 = q_prev1;
-    q_prev1 = q;
+    [p_prev, p] = [p, terms[i] * p + p_prev];
+    [q_prev, q] = [q, terms[i] * q + q_prev];
+    yield { p, q };
   }
+}
 
-  return convergents;
+// Compute all convergents from continued fraction terms
+function computeConvergents(terms) {
+  return Array.from(generateConvergents(terms));
 }
 
 // Format continued fraction as [a₀; a₁, a₂, ...]
@@ -113,8 +103,17 @@ function rationalize(x) {
 
 // Event listener
 document.getElementById('numberInput').addEventListener('input', (e) => {
-  const value = parseFloat(e.target.value);
-  if (!isNaN(value)) {
+  const input = e.target;
+  const value = parseFloat(input.value.trim());
+
+  if (!isNaN(value) && input.value.trim() !== '') {
+    input.classList.remove('error');
     rationalize(value);
+  } else if (input.value.trim() !== '') {
+    input.classList.add('error');
+    document.getElementById('results').classList.remove('visible');
+  } else {
+    input.classList.remove('error');
+    document.getElementById('results').classList.remove('visible');
   }
 });
