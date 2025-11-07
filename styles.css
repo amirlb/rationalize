@@ -169,8 +169,9 @@ tr:last-child td {
 .help-popup {
   position: fixed;
   bottom: 5rem;
-  right: 1.5rem;
-  width: 300px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(300px, calc(100vw - 2rem));
   background: white;
   border: 1px solid #ddd;
   border-radius: 8px;
