@@ -62,9 +62,12 @@ function quality(p, q, x) {
   return (error + 1e-5) * q;
 }
 
-// Format decimal to up to 15 digits without trailing zeros
+// Format decimal to up to 15 significant digits without trailing zeros
 function formatDecimal(value) {
-  return value.toFixed(15).replace(/\.?0+$/, '');
+  // Round to 15 significant figures to eliminate floating-point errors
+  const rounded = parseFloat(value.toPrecision(15));
+  // Convert to string and remove trailing zeros
+  return rounded.toString().replace(/\.0+$/, '');
 }
 
 // Main computation and display
