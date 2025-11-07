@@ -31,13 +31,20 @@ h1 {
   transition: border-color 0.2s;
 }
 
+/* Hide number input spinner arrows */
+#numberInput::-webkit-inner-spin-button,
+#numberInput::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+#numberInput {
+  -moz-appearance: textfield;
+}
+
 #numberInput:focus {
   outline: none;
   border-color: #4a90e2;
-}
-
-#numberInput.error {
-  border-color: #ef5350;
 }
 
 .results {
