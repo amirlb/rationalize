@@ -3,18 +3,20 @@
 function continuedFraction(x) {
   const terms = [];
   let remaining = x;
-  const maxTerms = 100; // Safety limit to prevent infinite loops
+  const maxTerms = 20; // Reasonable limit for practical fractions
 
   for (let i = 0; i < maxTerms; i++) {
     const integer = Math.floor(remaining);
+
+    // Stop if term is unreasonably large (indicates precision issues)
+    if (Math.abs(integer) > 1e8) break;
+
     terms.push(integer);
 
     const fractional = remaining - integer;
-    // Stop if fractional part is negligible (within floating point precision)
-    if (Math.abs(fractional) < 1e-10) break;
+    if (fractional === 0) break;
 
     remaining = 1 / fractional;
-    // Stop if remaining becomes too large (would indicate precision issues)
     if (!isFinite(remaining)) break;
   }
 
