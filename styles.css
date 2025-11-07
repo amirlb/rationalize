@@ -47,6 +47,17 @@ input[type="number"]:focus {
   border-color: #4a90e2;
 }
 
+input[type="number"].error {
+  background: repeating-linear-gradient(
+    45deg,
+    #ffebee,
+    #ffebee 10px,
+    #ffcdd2 10px,
+    #ffcdd2 20px
+  );
+  border-color: #ef5350;
+}
+
 .results {
   display: none;
 }
