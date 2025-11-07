@@ -3,15 +3,19 @@
 function continuedFraction(x) {
   const terms = [];
   let remaining = x;
+  const maxTerms = 100; // Safety limit to prevent infinite loops
 
-  while (true) {
+  for (let i = 0; i < maxTerms; i++) {
     const integer = Math.floor(remaining);
     terms.push(integer);
 
     const fractional = remaining - integer;
-    if (fractional === 0) break;
+    // Stop if fractional part is negligible (within floating point precision)
+    if (Math.abs(fractional) < 1e-10) break;
 
     remaining = 1 / fractional;
+    // Stop if remaining becomes too large (would indicate precision issues)
+    if (!isFinite(remaining)) break;
   }
 
   return terms;
@@ -104,16 +108,11 @@ function rationalize(x) {
 // Event listener
 document.getElementById('numberInput').addEventListener('input', (e) => {
   const input = e.target;
-  const value = parseFloat(input.value.trim());
+  const value = parseFloat(input.value);
 
-  if (!isNaN(value) && input.value.trim() !== '') {
-    input.classList.remove('error');
+  if (!isNaN(value) && input.value !== '') {
     rationalize(value);
-  } else if (input.value.trim() !== '') {
-    input.classList.add('error');
-    document.getElementById('results').classList.remove('visible');
   } else {
-    input.classList.remove('error');
     document.getElementById('results').classList.remove('visible');
   }
 });
